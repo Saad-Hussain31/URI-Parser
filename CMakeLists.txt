@@ -6,6 +6,12 @@ add_subdirectory(googletest)
 include_directories(include)
 
 
-add_executable(uri src/uri.cpp test/UriTests.cpp) 
+ 
+add_library(uri src/uri.cpp)
+add_executable(UriTest test/UriTests.cpp)
+target_link_libraries(UriTest uri gtest)
+
+
+
+
 target_compile_options(uri PRIVATE -Wall -Wextra -O2 -march=native -mtune=native)
-target_link_libraries(uri gtest)
