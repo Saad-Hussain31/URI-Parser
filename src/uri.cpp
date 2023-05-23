@@ -1,5 +1,18 @@
 
 #include "uri.hpp"
+#include <string>
+#include <vector>
+
+/*
+    foo://example.com:8042/over/there?name=ferret#nose
+    \_/   \______________/\_________/ \_________/ \__/
+    |           |            |            |        |
+scheme     authority       path        query   fragment
+    |   _____________________|__
+    / \ /                        \
+    urn:example:animal:ferret:nose
+*/
+
 
 namespace Uri {
 
@@ -27,23 +40,26 @@ namespace Uri {
             //authority
             const auto authorityEnd = rest.find("/", 2);
             impl_->host = rest.substr(2, authorityEnd - 2); //skeptical about -2
+            rest = rest.substr(authorityEnd);
         } else {
             impl_->host.clear();
         }
 
         //Parse path
-        while(!rest.empty()) {
-            auto pathDelimiter = rest.find('/');
-            if (pathDelimiter ==  std::string::npos) {
-                pathDelimiter = rest.length();
+        impl_->path.clear();
+        if(!rest.empty()) {
+            for(;;) {
+                auto pathDelimiter = rest.find('/');
+                if (pathDelimiter ==  std::string::npos) {
+                    impl_->path.push_back(rest);
+                    break;
+                } else {
+                    impl_->path.emplace_back(rest.begin(), rest.begin() + pathDelimiter);
+                    rest = rest.substr(pathDelimiter + 1);           
+                }
             }
-            impl_->path.emplace_back(rest.begin(), rest.begin() + pathDelimiter);
-
-            rest = rest.substr(pathDelimiter + 1);
-            
-
-
         }
+       
 
         return true;
     }
