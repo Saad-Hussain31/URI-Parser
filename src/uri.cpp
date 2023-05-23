@@ -6,6 +6,7 @@ namespace Uri {
     struct Uri::Impl {
         std::string scheme;
         std::string host;
+        std::vector<std::string> path;
 
     };
 
@@ -16,15 +17,34 @@ namespace Uri {
     }
     
     bool Uri::parseFromString(const std::string& uriString) {
+        //scheme
         const auto schemeEnd  = uriString.find(":");
         impl_->scheme = uriString.substr(0,schemeEnd);
-        if(uriString.substr(schemeEnd,2) == "//") {
+        auto rest = uriString.substr(schemeEnd + 1); //rest of the str past the part already parsed
+
+        //host
+        if(rest.substr(0,2) == "//") {
             //authority
-            const auto authorityEnd = uriString.find("/", schemeEnd + 2);
-            impl_->host = uriString.substr(schemeEnd + 2, authorityEnd - (schemeEnd + 2));
+            const auto authorityEnd = rest.find("/", 2);
+            impl_->host = rest.substr(2, authorityEnd - 2); //skeptical about -2
         } else {
             impl_->host.clear();
         }
+
+        //Parse path
+        while(!rest.empty()) {
+            auto pathDelimiter = rest.find('/');
+            if (pathDelimiter ==  std::string::npos) {
+                pathDelimiter = rest.length();
+            }
+            impl_->path.emplace_back(rest.begin(), rest.begin() + pathDelimiter);
+
+            rest = rest.substr(pathDelimiter + 1);
+            
+
+
+        }
+
         return true;
     }
 
@@ -38,7 +58,7 @@ namespace Uri {
     }
     
     std::vector<std::string> Uri::getPath() const{
-        return {"", "foo", "bar"};
+        return impl_->path;
     }
 
     
