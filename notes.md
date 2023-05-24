@@ -6,10 +6,12 @@
 Here are some examples of Uniform Resource Identifiers (URIs):
 
 1. **URI with authority and path of "/foo/bar" (absolute):**
+
 http://example.com/foo/bar
 
 
 2. **URI with authority only and no path:**
+
 http://example.com
 
 
