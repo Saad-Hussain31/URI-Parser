@@ -3,20 +3,13 @@
 #include <string>
 #include <vector>
 
-/*
-    foo://example.com:8042/over/there?name=ferret#nose
-    \_/   \______________/\_________/ \_________/ \__/
-    |           |            |            |        |
-scheme     authority       path        query   fragment
-    |   _____________________|__
-    / \ /                        \
-    urn:example:animal:ferret:nose
-*/
+
 
 
 namespace Uri {
 
     struct Uri::Impl {
+        std::string pathDelimiter;
         std::string scheme;
         std::string host;
         std::vector<std::string> path;
@@ -28,17 +21,21 @@ namespace Uri {
     Uri::Uri() : impl_(new Impl){
 
     }
+
+    void Uri::setPathDelimiter(const std::string& newPathDelimiter) {
+        impl_->pathDelimiter = newPathDelimiter;
+    }
     
     bool Uri::parseFromString(const std::string& uriString) {
         //scheme
-        const auto schemeEnd  = uriString.find(":");
+        const auto schemeEnd  = uriString.find(':');
         impl_->scheme = uriString.substr(0,schemeEnd);
         auto rest = uriString.substr(schemeEnd + 1); //rest of the str past the part already parsed
 
         //host
         if(rest.substr(0,2) == "//") {
             //authority
-            const auto authorityEnd = rest.find("/", 2);
+            const auto authorityEnd = rest.find(impl_->pathDelimiter, 2);
             impl_->host = rest.substr(2, authorityEnd - 2); //skeptical about -2
             rest = rest.substr(authorityEnd);
         } else {
@@ -47,20 +44,20 @@ namespace Uri {
 
         //Parse path
         impl_->path.clear();
-        if(!rest.empty()) {
+        if(rest == impl_->pathDelimiter) {
+            impl_->path.push_back("");
+        } else if (!rest.empty()) {
             for(;;) {
-                auto pathDelimiter = rest.find('/');
+                auto pathDelimiter = rest.find(impl_->pathDelimiter);
                 if (pathDelimiter ==  std::string::npos) {
                     impl_->path.push_back(rest);
                     break;
                 } else {
                     impl_->path.emplace_back(rest.begin(), rest.begin() + pathDelimiter);
-                    rest = rest.substr(pathDelimiter + 1);           
+                    rest = rest.substr(pathDelimiter + impl_->pathDelimiter.length());           
                 }
             }
         }
-       
-
         return true;
     }
 

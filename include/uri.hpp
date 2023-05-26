@@ -15,6 +15,7 @@ namespace Uri {
 
         public:
             Uri();
+            void setPathDelimiter(const std::string& newPathDelimiter);
             bool parseFromString(const std::string& uriString);
             std::string getScheme() const;
             std::string getHost() const;
