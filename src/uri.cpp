@@ -1,10 +1,6 @@
-
 #include "uri.hpp"
 #include <string>
 #include <vector>
-
-
-
 
 namespace Uri {
 
@@ -13,7 +9,6 @@ namespace Uri {
         std::string scheme;
         std::string host;
         std::vector<std::string> path;
-
     };
 
     Uri::~Uri() = default;
@@ -61,7 +56,6 @@ namespace Uri {
         return true;
     }
 
-
     std::string Uri::getScheme() const {
         return impl_->scheme;
     }
@@ -73,7 +67,5 @@ namespace Uri {
     std::vector<std::string> Uri::getPath() const{
         return impl_->path;
     }
-
-    
 
 }//end Uri
