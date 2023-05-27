@@ -5,7 +5,7 @@
 namespace Uri {
 
     struct Uri::Impl {
-        std::string pathDelimiter;
+        std::string pathDelimiter ="/";
         std::string scheme;
         std::string host;
         std::vector<std::string> path;
